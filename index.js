@@ -39,49 +39,60 @@ app.post('/feed', function (req, res) {
 	if (urls) {
 		let promises = []
 		for (let url of urls) {
-			console.log("current url", url);
-			let read = readFlux(url)
 
-			read.then((items) => {
+			let promise = new Promise((resolve, reject) => {
 
-				myCache.set( url, items, function( err, success ) {
-				  if ( !err && success ){
-				    console.log( success );
-				  }
+				console.log("current url", url);
+				let read = readFlux(url)
+
+				read.then((items) => {
+
+					myCache.set( url, items, function( err, success ) {
+					  if ( !err && success ){
+					    console.log( success );
+					  }
+					});
+
+					console.log("Length ", items.length);
+
+					let job = new CronJob('1 * * * * *', _ => {
+						// faire une difference avec les flux precedent et utiliser les websockets uniquement pour envoyer les nouveaux articles
+						let newsFeed = readFlux(url)
+						newsFeed.then((itemsCron) => {
+							let newFeeds = diff(myCache.get(url), itemsCron);
+							// there is new feeds
+
+							console.log("Length ", itemsCron.length);
+							if ( newFeeds ) {
+								// via les websockets envoyer le tableau newFeeds
+								console.log("Nouveaux Feed pour : "+ url +" !!!   il y a en "+ newFeeds.length + " en plus");
+								console.log(newFeeds.map((el) => { return el.title }));
+								let feeds = newFeeds.concat(myCache.get(url));
+								myCache.set(url, feeds);
+							} else {
+								console.log("Pas De Nouveaux Feed !!!");
+							}
+						}).catch((err) => {
+							console.log("Err Job", err);
+						})
+					  	// console.log('You will see this message every second');
+					}, null, true, 'Europe/Paris');
+					job.start();
+					resolve({url, items})
+				}).catch((err) => {
+					console.log("Err", err);
+					reject(err)
 				});
 
-				console.log("Length ", items.length);
-
-				let job = new CronJob('1 * * * * *', function() {
-					// faire une difference avec les flux precedent et utiliser les websockets uniquement pour envoyer les nouveaux articles
-					let newsFeed = readFlux(url)
-					newsFeed.then((itemsCron) => {
-						let newFeeds = diff(myCache.get(url), itemsCron);
-						// there is new feeds
-
-						console.log("Length ", itemsCron.length);
-						if ( newFeeds ) {
-							// via les websockets envoyer le tableau newFeeds
-							console.log("Nouveaux Feed pour : "+ url +" !!!   il y a en "+ newFeeds.length + " en plus");
-
-							let feeds = newFeeds.concat(myCache.get(url));
-							myCache.set(url, feeds);
-						} else {
-							console.log("Pas De Nouveaux Feed !!!");
-						}
-					}).catch((err) => {
-						console.log("Err Job", err);
-					})
-				  	// console.log('You will see this message every second');
-				}, null, true, 'Europe/Paris');
-				job.start();
-				res.send(JSON.stringify(items))
-			}).catch((err) => {
-				console.log("Err", err);
-				res.end(JSON.stringify({error: err.message}))
-			});
-
+			})
+			promises.push(promise);
 		}
+
+		Promise.all(promises).then((feeds) => {
+			res.send(JSON.stringify(feeds))
+		}).catch((err) => {
+			res.send(JSON.stringify({error: {url: url, message: err.message}}))
+		})
 	}
 })
 
