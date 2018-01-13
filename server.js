@@ -11,7 +11,7 @@ const myCache = new NodeCache();
 const verboseMode = false;
 
 let app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
