@@ -25,7 +25,7 @@ POST an array of urls with the following command
 #### input
 array of urls
 #### output
-feeds
+array of feeds
 
 #### example
 
