@@ -22,6 +22,13 @@ Add news feeds
 
 POST an array of urls with the following command 
 
+#### input
+array of urls
+#### output
+feeds
+
+#### example
+
 ```
   curl -H "Content-Type: application/json" -X  POST -d '{"urls":[URL_1, URL_2...]}' http://localhost:4000/feeds
 ```
