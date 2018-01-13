@@ -23,9 +23,9 @@ Add news feeds
 POST an array of urls with the following command 
 
 #### input
-array of urls
+array of urls : `{urls: [URL_1, URL_2]}`
 #### output
-array of feeds
+array of feeds : `{URL_1: [FEED_1-URL_1, FEED_2-URL_1], URL_2: [FEED_1-URL_2, FEED_2-URL_2]}`
 
 #### example
 
