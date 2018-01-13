@@ -34,7 +34,7 @@ POST /feed
 ==================
 */
 
-app.post('/feed', function (req, res) {
+app.post('/feeds', function (req, res) {
 
   let urls = req.body.urls;
   if(verboseMode) { console.log("urls", req.body) }
