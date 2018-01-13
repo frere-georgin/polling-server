@@ -4,7 +4,7 @@
   "description": "polling server",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node server.js",
     "dev": "echo 'run dev' & npm start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "nodemon": "nodemon -e js --config ./nodemon.config.json --exec npm run dev "
@@ -19,6 +19,7 @@
     "express": "^4.16.2",
     "feedparser": "^2.2.7",
     "node-cache": "^4.1.1",
+    "nodemon": "^1.14.11",
     "ping": "^0.2.2",
     "request": "^2.83.0"
   }
