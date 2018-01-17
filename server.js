@@ -156,4 +156,4 @@ function diff(previous, current) {
 
 
 app.listen(port);
-if(verboseMode) { console.log('Server started! At http://localhost:' + port) }
+if(verboseMode) { console.log('polling-server launched at http://localhost:' + port) }
