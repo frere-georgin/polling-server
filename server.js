@@ -16,6 +16,14 @@ const port = process.env.PORT || 4000;
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+
+io.sockets.on('connection', function (socket) {
+    console.log('Un client est connecté !');
+});
+
 
 /*
 ==================
@@ -74,6 +82,7 @@ app.post('/feeds', function (req, res) {
                 if(verboseMode) { console.log(newFeeds.map((el) => { return el.title })) }
                 let feeds = newFeeds.concat(myCache.get(url));
                 myCache.set(url, feeds);
+                io.sockets.emit('feeds', newFeeds)
               } else {
                 if(verboseMode) { console.log("Pas De Nouveaux Feed !!!") }
               }
@@ -125,7 +134,7 @@ function readFlux(url) {
       var meta = this.meta; // **NOTE** the "meta" is always available in the context of the feedparser instance
       var item;
 
-      if(verboseMode) { console.log("stream", stream) }
+      // if(verboseMode) { console.log("stream", stream) }
       if (stream) {
         while (item = stream.read()) {
           items.push(item)
@@ -156,4 +165,4 @@ function diff(previous, current) {
 
 
 app.listen(port);
-if(verboseMode) { console.log('Server started! At http://localhost:' + port) }
+console.log('Server started! At http://localhost:' + port)
